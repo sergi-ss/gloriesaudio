@@ -123,7 +123,7 @@ function connectWebSocket() {
             if(localMaxOffset < maxOffset ) maxOffset = localMaxOffset;
             if(localMinOffset > minOffset ) minOffset = localMinOffset;
             if(minOffset > maxOffset) serverOffset_ms = 0;
-            else serverOffset_ms = (maxOffset - minOffset) / 2;
+            else serverOffset_ms = (maxOffset + minOffset) / 2;
 
             if(audioReady && pb.classList.contains("disabled")) enablePlay();
         }

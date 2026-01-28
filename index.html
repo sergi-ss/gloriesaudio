@@ -95,8 +95,8 @@ const pb = document.getElementById("pb");
 pb.addEventListener('click', () => { playpause(); });
 
 let serverOffset_ms;
-let minOffset = 0;
-let maxOffset = 0;
+let minOffset = -999999;
+let maxOffset = 999999;
 let ws;
 let audioReady = false;
 
@@ -105,6 +105,8 @@ function connectWebSocket() {
     let protocol = window.location.protocol.startsWith('https') ? 'wss' : 'ws';
     let wHost = window.location.host;
     ws = new WebSocket(protocol+'://'+wHost);
+
+    //ws = new WebSocket('wss://gloriesaudio.onrender.com');
 
     ws.onopen = async () => {
         console.log('Connected. Waiting for sync...');

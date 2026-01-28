@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Universal Audio Sync</title>
+  <style>
+    body { font-family: system-ui; padding: 20px; }
+    button { padding: 12px 24px; font-size: 16px; }
+    #status { margin: 10px 0; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>Audio Sync (Any Device, Any Clock)</h1>
+  <p>Uses server time reference. Works regardless of device clock sync.</p>
+
+  <audio id="myAudio" loop preload="auto"
+         onloadedmetadata="enablePlay()"
+         onplay="displayPause()"
+         onpause="displayPlay()">
+    <source src="speech.mp3" type="audio/mpeg">
+  </audio>
+
+  <button id="pb" onclick="playpause()" disabled>Play</button>
+  <div id="status">Connecting to sync server...</div>
+  <div id="timeInfo"></div>
+
+  <script>
+    const audio = document.getElementById("myAudio");
+    const btn = document.getElementById("pb");
+    const statusEl = document.getElementById("status");
+    const timeEl = document.getElementById("timeInfo");
+
+    let ws;
+    let serverOffset = 0; // diferencia entre servidor y nuestro Date.now()
+    let syncStartTime = null; // cuando el servidor dijo "empieza"
+    let lastSyncTime = 0;
+
+    // Conecta al servidor de sincronización
+    function connectWebSocket() {
+      ws = new WebSocket('ws://localhost:8080');
+
+      ws.onopen = () => {
+        statusEl.textContent = 'Connected. Waiting for sync...';
+        // Envía nuestro tiempo local al servidor
+        ws.send(JSON.stringify({
+          type: 'clientTime',
+          clientTime: Date.now()
+        }));
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'sync') {
+          serverOffset = data.serverTimeMs - Date.now();
+          lastSyncTime = Date.now();
+
+          // Si ya estamos reproduciendo, re-sincroniza
+          if (syncStartTime && audio.paused === false) {
+            syncToServerTime();
+          }
+        }
+      };
+
+      ws.onerror = () => {
+        statusEl.textContent = 'Server connection failed. Check if server is running.';
+      };
+    }
+
+    function getServerTime() {
+      const localTime = Date.now();
+      const latency = localTime - lastSyncTime;
+      return localTime + serverOffset + (latency / 2); // estimación simple
+    }
+
+    function startSync() {
+      syncStartTime = getServerTime(); // "ahora" según el servidor
+      statusEl.textContent = `Sync started at server time ${syncStartTime}`;
+    }
+
+    function syncToServerTime() {
+      if (!syncStartTime || !audio.duration) return;
+
+      const nowServer = getServerTime();
+      //const elapsed = (nowServer - syncStartTime) / 1000;
+      const duration = audio.duration;
+      const targetPos = nowServer % duration; // (elapsed % duration + duration) % duration;
+
+      const current = audio.currentTime;
+      const diff = Math.abs(current - targetPos);
+
+      if (diff > 0.08) { // solo si desfasaje > 80ms
+        audio.currentTime = targetPos;
+      }
+    }
+
+    function playpause() {
+      if (audio.paused) {
+        startSync();
+        syncToServerTime();
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+
+    function displayPause() { btn.textContent = "Pause"; }
+    function displayPlay()  { btn.textContent = "Play"; }
+
+    function showTime() {
+      if (syncStartTime) {
+        const serverNow = getServerTime();
+        const elapsed = (serverNow - syncStartTime) / 1000;
+        const pos = (elapsed % audio.duration || 0).toFixed(3);
+        timeEl.textContent = `Server elapsed: ${elapsed.toFixed(1)}s | Position: ${pos}s`;
+      }
+    }
+
+    function enablePlay() {
+      btn.disabled = false;
+      setInterval(syncToServerTime, 10000); // re-sync cada 10s
+      setInterval(showTime, 100);
+    }
+
+    // Inicia conexión
+    connectWebSocket();
+  </script>
+</body>
+</html>

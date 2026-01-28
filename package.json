@@ -1,0 +1,24 @@
+{
+  "name": "gloriesaudio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sync-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergi-ss/gloriesaudio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sergi-ss/gloriesaudio/issues"
+  },
+  "homepage": "https://github.com/sergi-ss/gloriesaudio#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "ws": "^8.19.0"
+  }
+}

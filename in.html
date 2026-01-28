@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<audio id="audioTag" loop onloadeddata="enablePlay()" onplay="displayPause()" onpause="displayPlay()">
+    <source src="speech.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+<button id="pb" onclick=playpause() disabled>Play</button>
+
+<p id="cTime"></p>
+
+<script>
+const unixReferenceTime = 0;
+const audio = document.getElementById("audioTag");
+
+let serverOffset_ms = 0;
+let minOffset = 0;
+let maxOffset = 0;
+let ws;
+
+function connectWebSocket() {
+    let protocol = window.location.protocol.startsWith('https') ? 'wss' : 'ws';
+    let wHost = window.location.host;
+    ws = new WebSocket(protocol+'://'+wHost);
+
+    ws.onopen = () => {
+        console.log('Connected. Waiting for sync...');
+        ws.send(JSON.stringify({
+            type: 'getServerTime',
+            t1: Date.now()
+        }));
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'serverTime') {
+            let t3 = Date.now();
+            let localMaxOffset = data.serverTime_ms - data.clientTime_ms;
+            let localMinOffset = data.serverTime_ms - t3;
+            if(localMaxOffset < maxOffset ) maxOffset = localMaxOffset;
+            if(localMinOffset > minOffset ) minOffset = localMinOffset;
+            if(minOffset > maxOffset) serverOffset_ms = 0;
+            else serverOffset_ms = (maxOffset - minOffset) / 2;
+        }
+    };
+
+    ws.onerror = () => {
+       console.error('Server connection failed. Check if server is running.');
+    };
+}
+
+function getServerTime(){
+    if(!ws || ws.)
+}
+
+function sync() {
+    let duration_ms = audio.duration * 1000;
+    let timeToSeek_ms = (Date.now() + serverOffset_ms - unixReferenceTime) % duration_ms;
+    audio.currentTime = timeToSeek_ms / 1000;
+}
+
+function playpause() {
+	if(audio.paused) {
+        sync();
+        audio.play();
+    } else 
+        audio.pause();
+}
+
+function displayPause() {
+    document.getElementById("pb").innerHTML = "Pause";
+}
+
+function displayPlay() {
+    document.getElementById("pb").innerHTML = "Play";
+}
+
+let p = document.getElementById("cTime");
+function showTime() {
+    p.innerHTML = audio.currentTime;
+}
+function enablePlay() {
+    document.getElementById("pb").disabled = false;
+    sync();
+    setInterval(sync, 10000);
+    //setInterval(showTime, 50);
+}
+
+connectWebSocket();
+</script>
+
+</body>
+</html>

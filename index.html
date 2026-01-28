@@ -145,7 +145,7 @@ async function getServerOffset(){
 }
 
 async function sync() {
-    //await getServerOffset();
+    await getServerOffset();
     let duration_ms = audio.duration * 1000;
     let timeToSeek_ms = (Date.now() + serverOffset_ms - unixReferenceTime) % duration_ms;
     audio.currentTime = timeToSeek_ms / 1000;

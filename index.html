@@ -92,8 +92,8 @@
 const unixReferenceTime = 0;
 const audio = document.getElementById("audioTag");
 const pb = document.getElementById("pb");
-pb.addEventListener('click', () => { playpause(); });
-audio.addEventListener('canplaythrough', onLoadedAudio);
+pb.addEventListener('click', playpause);
+audio.addEventListener('loadeddata', onLoadedAudio);
 
 let serverOffset_ms;
 let minOffset = -999999;

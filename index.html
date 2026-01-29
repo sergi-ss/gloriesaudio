@@ -93,13 +93,11 @@ const unixReferenceTime = 0;
 const audio = document.getElementById("audioTag");
 const pb = document.getElementById("pb");
 pb.addEventListener('click', playpause);
-audio.addEventListener('canplaythrough', onLoadedAudio, { once: true });
 
 let serverOffset_ms;
 let minOffset = -999999;
 let maxOffset = 999999;
 let ws;
-let audioReady = false;
 
 function connectWebSocket() {
 
@@ -126,7 +124,7 @@ function connectWebSocket() {
             if(minOffset > maxOffset) serverOffset_ms = 0;
             else serverOffset_ms = (maxOffset + minOffset) / 2;
 
-            if(audioReady && pb.classList.contains("disabled")) enablePlay();
+            if(pb.classList.contains("disabled")) enablePlay();
         }
     };
 
@@ -166,12 +164,6 @@ function displayPause() {
 
 function displayPlay() {
     pb.classList.remove("button--active")
-}
-
-function onLoadedAudio() {
-    audioReady = true;
-    if(serverOffset_ms) 
-        enablePlay();
 }
 
 let p = document.getElementById("cTime");

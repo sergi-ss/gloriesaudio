@@ -93,7 +93,7 @@ const unixReferenceTime = 0;
 const audio = document.getElementById("audioTag");
 const pb = document.getElementById("pb");
 pb.addEventListener('click', playpause);
-audio.addEventListener('loadeddata', onLoadedAudio);
+audio.addEventListener('canplaythrough', onLoadedAudio, { once: true });
 
 let serverOffset_ms;
 let minOffset = -999999;

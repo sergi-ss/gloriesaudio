@@ -76,7 +76,7 @@
 </head>
 <body>
 
-<audio id="audioTag" loop onloadeddata="onLoadedAudio()" onplay="displayPause()" onpause="displayPlay()">
+<audio id="audioTag" loop onplay="displayPause()" onpause="displayPlay()">
     <source src="glories.mp3" type="audio/mpeg">
   Your browser does not support the audio element.
 </audio>
@@ -93,6 +93,7 @@ const unixReferenceTime = 0;
 const audio = document.getElementById("audioTag");
 const pb = document.getElementById("pb");
 pb.addEventListener('click', () => { playpause(); });
+audio.addEventListener('canplaythrough', onLoadedAudio);
 
 let serverOffset_ms;
 let minOffset = -999999;

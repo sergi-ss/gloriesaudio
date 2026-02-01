@@ -162,7 +162,7 @@ async function sync() {
 
 function playpause() {
 	if(audio.paused) {
-        sync().then(() => {audio.play().catch(console.error);});
+        sync().then(() => {audio.play().catch(console.error); setInterval(sync, 10000);});
     } else 
         audio.pause();
 }
@@ -181,8 +181,8 @@ function showTime() {
 }
 function enablePlay() {
     pb.classList.remove("disabled");
-    sync();
-    setInterval(sync, 10000);
+    //sync();
+    //setInterval(sync, 10000);
     //setInterval(showTime, 50);
 }
 

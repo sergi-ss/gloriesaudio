@@ -152,18 +152,21 @@ async function getServerOffset(){
 
 async function sync() {
     //await getServerOffset();
+    await audio.play();
+    audio.pause();
     console.log("pre ct: "+audio.currentTime);
     let duration_ms = audio.duration * 1000;
     let timeToSeek_ms = (Date.now() + serverOffset_ms - unixReferenceTime) % duration_ms;
     audio.currentTime = timeToSeek_ms / 1000;
+
+    await audio.play();
     console.log("to seek: "+timeToSeek_ms);
     console.log("post ct: "+audio.currentTime);
-    await delay(1000);
 }
 
 function playpause() {
 	if(audio.paused) {
-        sync().then(() => {audio.play().catch(console.error); setInterval(sync, 10000);});
+        sync()//.then(() => {audio.play().catch(console.error); setInterval(sync, 10000);});
     } else 
         audio.pause();
 }

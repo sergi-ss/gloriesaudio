@@ -96,7 +96,7 @@ pb.addEventListener('click', playpause);
 
  let metadataReady = false;
 
-  audio.addEventListener('canplay', () => {
+  audio.addEventListener('loadedmetadata', () => {
     metadataReady = true;
     if(serverOffset_ms) enablePlay();
   });

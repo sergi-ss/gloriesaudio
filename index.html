@@ -162,7 +162,7 @@ function sync() {
     console.log("pre ct: "+audio.currentTime);
     let duration_ms = audio.duration * 1000;
     let timeToSeek = ((Date.now() + serverOffset_ms - unixReferenceTime) % duration_ms) / 1000;
-    if( Math.abs(audio.currentTime - timeToSeek) > 0.1 )
+    if( Math.abs(audio.currentTime - timeToSeek) > 0.3 )
         audio.currentTime = timeToSeek;
 
     console.log("to seek: "+timeToSeek);

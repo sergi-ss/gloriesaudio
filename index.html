@@ -158,6 +158,7 @@ async function sync() {
     audio.currentTime = timeToSeek_ms / 1000;
     console.log("to seek: "+timeToSeek_ms);
     console.log("post ct: "+audio.currentTime);
+    await delay(1000);
 }
 
 function playpause() {

@@ -145,10 +145,12 @@ async function getServerOffset(){
 
 async function sync() {
     //await getServerOffset();
+    console.log("pre ct: "+audio.currentTime);
     let duration_ms = audio.duration * 1000;
     let timeToSeek_ms = (Date.now() + serverOffset_ms - unixReferenceTime) % duration_ms;
     audio.currentTime = timeToSeek_ms / 1000;
-    console.log(timeToSeek_ms);
+    console.log("to seek: "+timeToSeek_ms);
+    console.log("post ct: "+audio.currentTime);
 }
 
 function playpause() {

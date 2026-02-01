@@ -94,6 +94,13 @@ const audio = document.getElementById("audioTag");
 const pb = document.getElementById("pb");
 pb.addEventListener('click', playpause);
 
+ let metadataReady = false;
+
+  audio.addEventListener('loadedmetadata', () => {
+    metadataReady = true;
+    if(serverOffset_ms) enablePlay();
+  });
+
 let serverOffset_ms;
 let minOffset = -999999;
 let maxOffset = 999999;
@@ -124,7 +131,7 @@ function connectWebSocket() {
             if(minOffset > maxOffset) serverOffset_ms = 0;
             else serverOffset_ms = (maxOffset + minOffset) / 2;
 
-            if(pb.classList.contains("disabled")) enablePlay();
+            if(pb.classList.contains("disabled") && metadataReady) enablePlay();
         }
     };
 

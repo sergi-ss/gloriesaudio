@@ -162,7 +162,7 @@ async function sync() {
 
 function playpause() {
 	if(audio.paused) {
-        sync().then(() => {audio.play();});
+        sync().then(() => {audio.play().catch(console.error);});
     } else 
         audio.pause();
 }

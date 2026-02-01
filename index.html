@@ -96,7 +96,7 @@ pb.addEventListener('click', playpause);
 
  let metadataReady = false;
 
-  audio.addEventListener('loadedmetadata', () => {
+  audio.addEventListener('canplay', () => {
     metadataReady = true;
     if(serverOffset_ms) enablePlay();
   });
@@ -105,6 +105,7 @@ let serverOffset_ms;
 let minOffset = -999999;
 let maxOffset = 999999;
 let ws;
+let syncInterval;
 
 function connectWebSocket() {
 
@@ -116,8 +117,7 @@ function connectWebSocket() {
 
     ws.onopen = async () => {
         console.log('Connected. Waiting for sync...');
-        for(let i = 0; i < 3; i++) 
-            await getServerOffset();
+        computeOffset();
     };
 
     ws.onmessage = (event) => {
@@ -140,6 +140,13 @@ function connectWebSocket() {
     };
 }
 
+async function computeOffset(){
+    minOffset = -999999;
+    maxOffset = 999999;
+    for(let i = 0; i < 3; i++) 
+        await getServerOffset();
+}
+
 const delay = ms => new Promise(res => setTimeout(res, ms));
 async function getServerOffset(){
     if(!ws || ws.readyState !== WebSocket.OPEN) return;
@@ -150,26 +157,40 @@ async function getServerOffset(){
     await delay(1000);
 }
 
-async function sync() {
-    //await getServerOffset();
-    await audio.play();
-    audio.pause();
+function sync() {
+    if (!audioUnlocked) return;
     console.log("pre ct: "+audio.currentTime);
     let duration_ms = audio.duration * 1000;
-    let timeToSeek_ms = (Date.now() + serverOffset_ms - unixReferenceTime) % duration_ms;
-    audio.currentTime = timeToSeek_ms / 1000;
+    let timeToSeek = ((Date.now() + serverOffset_ms - unixReferenceTime) % duration_ms) / 1000;
+    if( Math.abs(audio.currentTime - timeToSeek) > 0.1 )
+        audio.currentTime = timeToSeek;
 
-    await audio.play();
-    console.log("to seek: "+timeToSeek_ms);
+    console.log("to seek: "+timeToSeek);
     console.log("post ct: "+audio.currentTime);
+    computeOffset();
 }
 
-function playpause() {
+let audioUnlocked = false;
+async function playpause() {
+    if (!audioUnlocked) {
+        try {
+            await audio.play();
+            audio.pause();
+            audioUnlocked = true;
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+    }
+
 	if(audio.paused) {
         sync()//.then(() => {audio.play().catch(console.error); setInterval(sync, 10000);});
-        setInterval(sync, 10000);
-    } else 
+        syncInterval = setInterval(sync, 10000);
+        await audio.play();
+    } else {
         audio.pause();
+        clearInterval(syncInterval);
+    }
 }
 
 function displayPause() {

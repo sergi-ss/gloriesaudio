@@ -101,6 +101,7 @@ pb.addEventListener('click', playpause);
     if(serverOffset_ms) enablePlay();
   });
 
+let newServerOffset_ms;
 let serverOffset_ms;
 let minOffset = -999999;
 let maxOffset = 999999;
@@ -128,10 +129,8 @@ function connectWebSocket() {
             let localMinOffset = data.serverTime_ms - t3;
             if(localMaxOffset < maxOffset ) maxOffset = localMaxOffset;
             if(localMinOffset > minOffset ) minOffset = localMinOffset;
-            if(minOffset > maxOffset) serverOffset_ms = 0;
-            else serverOffset_ms = (maxOffset + minOffset) / 2;
-
-            if(pb.classList.contains("disabled") && metadataReady) enablePlay();
+            if(minOffset > maxOffset) newServerOffset_ms = 0;
+            else newServerOffset_ms = (maxOffset + minOffset) / 2;
         }
     };
 
@@ -143,8 +142,16 @@ function connectWebSocket() {
 async function computeOffset(){
     minOffset = -999999;
     maxOffset = 999999;
+    newServerOffset_ms = null;
     for(let i = 0; i < 3; i++) 
         await getServerOffset();
+    while(newServerOffset_ms === null) 
+        await delay(500);
+    if(!serverOffset_ms || Math.abs(serverOffset_ms - newServerOffset_ms) > 0.2){
+        serverOffset_ms = newServerOffset_ms;
+        if(!audio.paused) sync();
+    }
+    if(pb.classList.contains("disabled") && metadataReady) enablePlay();
 }
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
@@ -154,7 +161,7 @@ async function getServerOffset(){
         type: 'getServerTime',
         t1: Date.now()
     }));
-    await delay(1000);
+    await delay(500);
 }
 
 function sync() {
@@ -162,12 +169,11 @@ function sync() {
     console.log("pre ct: "+audio.currentTime);
     let duration_ms = audio.duration * 1000;
     let timeToSeek = ((Date.now() + serverOffset_ms - unixReferenceTime) % duration_ms) / 1000;
-    if( Math.abs(audio.currentTime - timeToSeek) > 0.3 )
-        audio.currentTime = timeToSeek;
+    audio.currentTime = timeToSeek;
 
     console.log("to seek: "+timeToSeek);
     console.log("post ct: "+audio.currentTime);
-    //computeOffset();
+    
 }
 
 let audioUnlocked = false;
@@ -184,8 +190,8 @@ async function playpause() {
     }
 
 	if(audio.paused) {
-        sync()//.then(() => {audio.play().catch(console.error); setInterval(sync, 10000);});
-        syncInterval = setInterval(sync, 10000);
+        sync();
+        syncInterval = setInterval(computeOffset, 20000);
         await audio.play();
     } else {
         audio.pause();

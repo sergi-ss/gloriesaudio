@@ -2,6 +2,12 @@
 <html>
 <head>
     <style>
+        @font-face {
+            font-family: graphik;
+            src: url(graphik/Graphik-Regular.otf);
+            font-weight: normal;
+            font-style: normal;
+        }
         *,*:before,*:after,ul,li,a,button,input,h1,h2,h3,h4,h5,h6,p,img,image,svg,path,g,
         canvas {
             margin: 0;
@@ -10,7 +16,7 @@
             background-color: transparent;
             border: none;
             text-decoration: none;
-            font-family: "Roboto";
+            font-family: "graphik";
             -webkit-user-select: none;
                 -moz-user-select: none;
                 -ms-user-select: none;
@@ -33,7 +39,7 @@
             background-color: #000;
             font-family: "Roboto";
             color: white;
-            font-size: 12pt;
+            font-size: 24px;
         }
 
         .button {
@@ -75,7 +81,7 @@
             transform: translateX(0px);
         }
         .cover {
-            height: calc(100vh - 400px);
+            height: calc(100vh - 600px);
             width: 100%;
             margin: 200px 0;
             position: absolute;
@@ -89,13 +95,20 @@
             position: absolute;
             top: 200px;
             text-align: center;
-            font-size: 4rem;
+            font-size: 2rem;
         }
         .bottomtx{
             position: absolute;
             bottom: 200px;
             text-align: center;
-            font-size: 3rem;
+            font-size: 1.5rem;
+        }
+
+        @media (min-width: 1200px) {
+            html,
+            .body {
+                font-size: 16px;
+            }
         }
     </style>
 </head>

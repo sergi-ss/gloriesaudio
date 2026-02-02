@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -36,7 +36,7 @@ jobs:
           path: .
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build
     permissions:
       id-token: write #This is required for requesting the JWT
@@ -62,4 +62,5 @@ jobs:
           app-name: 'gloriesaudio'
           slot-name: 'Production'
           package: .
+
           

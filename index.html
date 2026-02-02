@@ -30,8 +30,10 @@
             flex-direction: row;
             margin: 0;
             padding: 0;
-            background-color: #FAFAFA;
+            background-color: #000;
             font-family: "Roboto";
+            color: white;
+            font-size: 12pt;
         }
 
         .button {
@@ -41,7 +43,7 @@
             align-items: center;
             justify-content: center;
             flex-direction: row;
-            border: 3px solid #1e90ff;
+            border: 3px solid #FAFAFA;
         }
         .button.disabled {
             pointer-events: none;
@@ -53,7 +55,7 @@
         .button--play .button__shape {
             width: 25px;
             height: 75px;
-            background: #1e90ff;
+            background: #FAFAFA;
             transition: 0.3s ease-in-out;
         }
         .button--play .button__shape--one {
@@ -72,9 +74,34 @@
             -webkit-clip-path: polygon(50% 15%, 100% 15%, 100% 85%, 50% 85%);
             transform: translateX(0px);
         }
+        .cover {
+            height: calc(100vh - 400px);
+            width: 100%;
+            margin: 200px 0;
+            position: absolute;
+
+            background-image: url("background.png");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+        }
+        .toptx{
+            position: absolute;
+            top: 200px;
+            text-align: center;
+            font-size: 4rem;
+        }
+        .bottomtx{
+            position: absolute;
+            bottom: 200px;
+            text-align: center;
+            font-size: 3rem;
+        }
     </style>
 </head>
 <body>
+
+<div class="cover"></div>
 
 <audio id="audioTag" loop onplay="displayPause()" onpause="displayPlay()">
     <source src="glories-2.wav" type="audio/mpeg">
@@ -86,7 +113,8 @@
   <div class="button__shape button__shape--two"></div>
 </div>
 
-<p id="cTime"></p>
+<p class="toptx"><b>Laser Faces</b> <br/> Antoni Arola, 2026</p>
+<p class="bottomtx"><b>Llum BCN 26</b></p>
 
 <script>
 const unixReferenceTime = 0;
@@ -207,10 +235,10 @@ function displayPlay() {
     pb.classList.remove("button--active")
 }
 
-let p = document.getElementById("cTime");
+/*let p = document.getElementById("cTime");
 function showTime() {
     p.innerHTML = audio.currentTime;
-}
+}*/
 function enablePlay() {
     pb.classList.remove("disabled");
     //sync();

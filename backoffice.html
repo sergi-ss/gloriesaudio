@@ -105,6 +105,7 @@ function connectWebSocket() {
 
     let protocol = window.location.protocol.startsWith('https') ? 'wss' : 'ws';
     let wHost = window.location.host;
+    if(!wHost || wHost === '') wHost = 'gloriesaudio.onrender.com';
     ws = new WebSocket(protocol+'://'+wHost);
 
     //ws = new WebSocket('wss://gloriesaudio.onrender.com');

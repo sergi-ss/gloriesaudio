@@ -30,18 +30,23 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('message', (message) => {
-    const data = JSON.parse(message);
-    if (data.type === 'clientTime') {
-      // Calcula offset entre cliente y servidor
-      const serverTime = Date.now();
-      globalOffset = (data.clientTime - serverTime) / 2; // simple estimación
-    }
-    if (data.type === 'getServerTime') {
-      ws.send(JSON.stringify({
-        type: 'serverTime',
-        serverTime_ms: Date.now(),
-        clientTime_ms: data.t1
-      }));
+    try{
+      const data = JSON.parse(message);
+      if (data.type === 'clientTime') {
+        // Calcula offset entre cliente y servidor
+        const serverTime = Date.now();
+        globalOffset = (data.clientTime - serverTime) / 2; // simple estimación
+      }
+      if (data.type === 'getServerTime') {
+        ws.send(JSON.stringify({
+          type: 'serverTime',
+          serverTime_ms: Date.now(),
+          clientTime_ms: data.t1
+        }));
+      }
+    }catch (e) {
+      console.error("Error parsing message:");
+      console.error(e);
     }
   });
 });

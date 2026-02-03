@@ -103,12 +103,12 @@ let syncInterval;
 
 function connectWebSocket() {
 
-    let protocol = window.location.protocol.startsWith('https') ? 'wss' : 'ws';
+    let protocol = window.location.protocol.startsWith('http:') ? 'ws' : 'wss';
     let wHost = window.location.host;
-    if(!wHost || wHost === '') wHost = 'gloriesaudio.onrender.com';
+    if(!wHost || wHost === '') wHost = 'gloriesaudio.azurewebsites.net';
     ws = new WebSocket(protocol+'://'+wHost);
 
-    //ws = new WebSocket('wss://gloriesaudio.onrender.com');
+    //ws = new WebSocket('wss://gloriesaudio.azurewebsites.net');
 
     ws.onopen = async () => {
         console.log('Connected. Waiting for sync...');

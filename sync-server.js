@@ -12,7 +12,7 @@ let globalOffset = 0; // offset para compensar drift del servidor
 
 // WebSocket para enviar tiempo maestro a todos los clientes
 wss.on('connection', (ws) => {
-  console.log('Client connected');
+  //console.log('Client connected');
   
   // Envía tiempo maestro cada 1s
   /*const interval = setInterval(() => {
@@ -26,7 +26,7 @@ wss.on('connection', (ws) => {
 
   ws.on('close', () => {
     //clearInterval(interval);
-    console.log('Client disconnected');
+    //console.log('Client disconnected');
   });
 
   ws.on('message', (message) => {
